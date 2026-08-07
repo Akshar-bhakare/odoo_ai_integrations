@@ -1,0 +1,44 @@
+{
+  "name": "odoo-test-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:engine": "vitest run src/lib/incentives",
+    "studio:inspect": "vite-node scripts/incentive-studio.ts inspect",
+    "studio:provision": "vite-node scripts/incentive-studio.ts provision",
+    "studio:smoke": "vite-node scripts/incentive-studio.ts smoke",
+    "phase5:inspect": "vite-node scripts/phase5-live-verification.ts inspect",
+    "phase5:http": "vite-node scripts/phase5-live-verification.ts http",
+    "phase5:workflow": "vite-node scripts/phase5-live-verification.ts workflow",
+    "phase5:workflow-status": "vite-node scripts/phase5-live-verification.ts workflow-status",
+    "phase5:attributions": "vite-node scripts/phase5-live-verification.ts attributions",
+    "phase5.5:api": "vite-node scripts/debug-incentive-calculation-api.ts",
+    "phase6:uat": "vite-node scripts/phase6-uat-validation.ts",
+    "phase7:audit": "vite-node scripts/phase7-production-readiness.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "jose": "^6.2.9",
+    "next": "16.3.0",
+    "pdf-lib": "^1.17.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  }
+}
