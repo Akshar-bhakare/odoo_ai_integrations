@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F7F7F6;
+  --foreground: #1F2937;
+  --card-bg: #FFFFFF;
+  --border-color: #E5E7EB;
+  --accent-color: #E2583E;
+  --accent-hover: #C94B34;
+  --muted-text: #6B7280;
+
+  /* Status colors (muted variants) */
+  --status-success: #16A34A; /* muted green */
+  --status-warning: #F59E0B; /* amber */
+  --status-error: #EF4444;   /* red */
+  --status-info: #3B82F6;    /* blue */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card-bg: var(--card-bg);
+  --color-border-custom: var(--border-color);
+  --color-accent-custom: var(--accent-color);
+  --color-accent-hover: var(--accent-hover);
+  --color-muted-custom: var(--muted-text);
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-error: var(--status-error);
+  --color-status-info: var(--status-info);
+  --font-sans: var(--font-inter, ui-sans-serif), system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
