@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "code": "SUNLECTRIC_STANDARD_SALES",
+  "name": "Sunlectric Standard Sales Incentive",
+  "currency": "INR",
+  "salaryPolicy": {
+    "effectiveDateBasis": "first_day_of_calendar_month",
+    "proration": "none"
+  },
+  "mainIncentive": {
+    "structure": "flat",
+    "flat": {
+      "threshold": {
+        "source": "salary_multiple",
+        "salaryMultiplier": 6
+      },
+      "carryForwardEnabled": true,
+      "rate": 0.1,
+      "payoutBasis": "entire_eligible_base",
+      "previousBasePayout": "include_previous_unpaid_base"
+    },
+    "slab": null
+  },
+  "base": {
+    "deductEmployeeExpenses": true,
+    "deductCommission": true,
+    "transportField": "x_studio_transport_charges",
+    "loadingField": "x_studio_loading_charges"
+  },
+  "newCustomer": {
+    "enabled": true,
+    "qualificationScope": "company_global",
+    "qualificationPeriod": "first_invoice_calendar_month",
+    "minimumQualifyingCustomers": 3,
+    "billingComparison": "gt",
+    "minimumBilling": 100000,
+    "minimumGmAmount": null,
+    "minimumGmPercent": 3.5,
+    "bonusPerCustomer": 2000,
+    "ownershipStrategy": "customer_owner",
+    "ownershipDateBasis": "event_date",
+    "sameDayOwnershipRule": "start_of_day"
+  },
+  "repeatCustomer": {
+    "enabled": true,
+    "requiresQualifiedNewCustomer": true,
+    "repeatWindowDays": 90,
+    "minimumBilling": null,
+    "minimumGmAmount": null,
+    "minimumGmPercent": null,
+    "bonusPerCustomer": 2000,
+    "maximumPayoutsPerCustomer": 1,
+    "ownershipStrategy": "customer_owner",
+    "ownershipDateBasis": "event_date",
+    "sameDayOwnershipRule": "start_of_day"
+  },
+  "performanceNotice": {
+    "enabled": true,
+    "consecutiveFailedMonths": 4,
+    "action": "performance_notice"
+  }
+}

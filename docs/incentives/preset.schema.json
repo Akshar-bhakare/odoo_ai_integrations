@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sunlectric.local/schemas/incentive-preset-v1.json",
+  "title": "Sunlectric Incentive Preset V1",
+  "$comment": "Accounting inclusion is fixed to posted Odoo records and is intentionally not preset-configurable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "code",
+    "name",
+    "currency",
+    "salaryPolicy",
+    "mainIncentive",
+    "base",
+    "newCustomer",
+    "repeatCustomer",
+    "performanceNotice"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "salaryPolicy": { "$ref": "#/$defs/salaryPolicy" },
+    "mainIncentive": { "$ref": "#/$defs/mainIncentive" },
+    "base": { "$ref": "#/$defs/base" },
+    "newCustomer": { "$ref": "#/$defs/newCustomer" },
+    "repeatCustomer": { "$ref": "#/$defs/repeatCustomer" },
+    "performanceNotice": { "$ref": "#/$defs/performanceNotice" }
+  },
+  "$defs": {
+    "salaryPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effectiveDateBasis", "proration"],
+      "properties": {
+        "effectiveDateBasis": { "const": "first_day_of_calendar_month" },
+        "proration": { "const": "none" }
+      }
+    },
+    "rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "newCustomerOwnershipStrategy": {
+      "type": "string",
+      "enum": [
+        "customer_owner",
+        "assigned_salesperson",
+        "manual"
+      ]
+    },
+    "repeatCustomerOwnershipStrategy": {
+      "type": "string",
+      "enum": [
+        "customer_owner",
+        "repeat_biller",
+        "original_biller",
+        "assigned_salesperson",
+        "manual"
+      ]
+    },
+    "flatConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "threshold",
+        "carryForwardEnabled",
+        "rate",
+        "payoutBasis",
+        "previousBasePayout"
+      ],
+      "properties": {
+        "threshold": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "salaryMultiplier"],
+          "properties": {
+            "source": { "const": "salary_multiple" },
+            "salaryMultiplier": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "carryForwardEnabled": { "type": "boolean" },
+        "rate": { "$ref": "#/$defs/rate" },
+        "payoutBasis": {
+          "enum": ["entire_eligible_base", "above_threshold_only"]
+        },
+        "previousBasePayout": {
+          "enum": ["current_month_only", "include_previous_unpaid_base"]
+        }
+      }
+    },
+    "fixedAmountSlab": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimumBase", "rate"],
+      "properties": {
+        "minimumBase": { "type": "number", "minimum": 0 },
+        "rate": { "$ref": "#/$defs/rate" }
+      }
+    },
+    "salaryMultipleSlab": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimumMultiplier", "rate"],
+      "properties": {
+        "minimumMultiplier": { "type": "number", "exclusiveMinimum": 0 },
+        "rate": { "$ref": "#/$defs/rate" }
+      }
+    },
+    "fixedAmountSlabConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "thresholdType",
+        "carryForwardEnabled",
+        "slabApplication",
+        "slabs"
+      ],
+      "properties": {
+        "thresholdType": { "const": "fixed_amount" },
+        "carryForwardEnabled": { "type": "boolean" },
+        "slabApplication": { "const": "whole_eligible_base" },
+        "slabs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/fixedAmountSlab" }
+        }
+      }
+    },
+    "salaryMultipleSlabConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "thresholdType",
+        "carryForwardEnabled",
+        "slabApplication",
+        "slabs"
+      ],
+      "properties": {
+        "thresholdType": { "const": "salary_multiple" },
+        "carryForwardEnabled": { "type": "boolean" },
+        "slabApplication": { "const": "whole_eligible_base" },
+        "slabs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/salaryMultipleSlab" }
+        }
+      }
+    },
+    "slabConfig": {
+      "oneOf": [
+        { "$ref": "#/$defs/fixedAmountSlabConfig" },
+        { "$ref": "#/$defs/salaryMultipleSlabConfig" }
+      ]
+    },
+    "mainIncentive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structure", "flat", "slab"],
+      "properties": {
+        "structure": { "enum": ["flat", "slab"] },
+        "flat": { "type": ["object", "null"] },
+        "slab": { "type": ["object", "null"] }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "structure": { "const": "flat" },
+            "flat": { "$ref": "#/$defs/flatConfig" },
+            "slab": { "type": "null" }
+          }
+        },
+        {
+          "properties": {
+            "structure": { "const": "slab" },
+            "flat": { "type": "null" },
+            "slab": { "$ref": "#/$defs/slabConfig" }
+          }
+        }
+      ]
+    },
+    "base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deductEmployeeExpenses",
+        "deductCommission",
+        "transportField",
+        "loadingField"
+      ],
+      "properties": {
+        "deductEmployeeExpenses": { "type": "boolean" },
+        "deductCommission": { "type": "boolean" },
+        "transportField": { "const": "x_studio_transport_charges" },
+        "loadingField": { "const": "x_studio_loading_charges" }
+      }
+    },
+    "newCustomer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "qualificationScope",
+        "qualificationPeriod",
+        "minimumQualifyingCustomers",
+        "billingComparison",
+        "minimumBilling",
+        "minimumGmAmount",
+        "minimumGmPercent",
+        "bonusPerCustomer",
+        "ownershipStrategy",
+        "ownershipDateBasis",
+        "sameDayOwnershipRule"
+      ],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "qualificationScope": {
+          "description": "Scope used to evaluate each customer's billing, gross margin, and history. company_global never means a company-wide employee payout-count gate.",
+          "enum": ["company_global", "salesperson_specific"]
+        },
+        "qualificationPeriod": { "const": "first_invoice_calendar_month" },
+        "minimumQualifyingCustomers": {
+          "description": "Monthly minimum number of globally qualified new customers owned by one employee before that employee receives bonuses for those customers.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "billingComparison": { "enum": ["gt", "gte"] },
+        "minimumBilling": { "type": "number", "minimum": 0 },
+        "minimumGmAmount": { "type": ["number", "null"] },
+        "minimumGmPercent": { "type": ["number", "null"] },
+        "bonusPerCustomer": { "type": "number", "minimum": 0 },
+        "ownershipStrategy": { "$ref": "#/$defs/newCustomerOwnershipStrategy" },
+        "ownershipDateBasis": { "const": "event_date" },
+        "sameDayOwnershipRule": { "const": "start_of_day" }
+      }
+    },
+    "repeatCustomer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "requiresQualifiedNewCustomer",
+        "repeatWindowDays",
+        "minimumBilling",
+        "minimumGmAmount",
+        "minimumGmPercent",
+        "bonusPerCustomer",
+        "maximumPayoutsPerCustomer",
+        "ownershipStrategy",
+        "ownershipDateBasis",
+        "sameDayOwnershipRule"
+      ],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "requiresQualifiedNewCustomer": { "type": "boolean" },
+        "repeatWindowDays": { "type": "integer", "minimum": 1 },
+        "minimumBilling": { "type": ["number", "null"], "minimum": 0 },
+        "minimumGmAmount": { "type": ["number", "null"] },
+        "minimumGmPercent": { "type": ["number", "null"] },
+        "bonusPerCustomer": { "type": "number", "minimum": 0 },
+        "maximumPayoutsPerCustomer": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "ownershipStrategy": { "$ref": "#/$defs/repeatCustomerOwnershipStrategy" },
+        "ownershipDateBasis": { "const": "event_date" },
+        "sameDayOwnershipRule": { "const": "start_of_day" }
+      }
+    },
+    "performanceNotice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "consecutiveFailedMonths", "action"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "consecutiveFailedMonths": { "type": "integer", "minimum": 1 },
+        "action": { "const": "performance_notice" }
+      }
+    }
+  }
+}
